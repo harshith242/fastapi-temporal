@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import uuid
 import websockets
 import json
-from fastapi_temporal.config.config import TEMPORAL_CLIENT, TEMPORAL_WORKFLOW, TEMPORAL_TASK_QUEUE, START_SIGNAL_FUNCTION, get_logger,POLLING_INTERVAL,ALLOWED_ORIGINS
+from fastapi_temporal.config.config import TEMPORAL_CLIENT, TEMPORAL_WORKFLOW, TEMPORAL_TASK_QUEUE, START_SIGNAL_FUNCTION, get_logger,POLLING_INTERVAL,ALLOWED_ORIGINS, FASTAPI_HOST, FASTAPI_PORT, FASTAPI_RELOAD
 app = FastAPI()
 logger = get_logger(__name__)
 connected_websockets = set()
@@ -174,3 +174,17 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
     except WebSocketDisconnect:
         manager.disconnect(user_id)
 
+def run():
+    parser = argparse.ArgumentParser(description="Run FastAPI Temporal server")
+    parser.add_argument("--host", default=FASTAPI_HOST)
+    parser.add_argument("--port", type=int, default=FASTAPI_PORT)
+    parser.add_argument("--reload", action="store_true" if FASTAPI_RELOAD.lower() == "true" else "store_false")
+    
+    args = parser.parse_args()
+
+    uvicorn.run(
+        "fastapi_temporal.api.fastapi_comm:app",
+        host=args.host,
+        port=args.port,
+        reload=args.reload
+    )
