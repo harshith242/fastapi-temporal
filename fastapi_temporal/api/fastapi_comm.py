@@ -6,6 +6,8 @@ from fastapi.middleware.cors import CORSMiddleware
 import uuid
 import websockets
 import json
+import argparse
+import uvicorn
 from fastapi_temporal.config.config import TEMPORAL_CLIENT, TEMPORAL_WORKFLOW, TEMPORAL_TASK_QUEUE, START_SIGNAL_FUNCTION, get_logger,POLLING_INTERVAL,ALLOWED_ORIGINS, FASTAPI_HOST, FASTAPI_PORT, FASTAPI_RELOAD
 app = FastAPI()
 logger = get_logger(__name__)
@@ -144,7 +146,7 @@ async def poll_temporal(workflow_handle, user_id, polling_interval):
             
         else:
             await manager.send_to_user(user_id, "No activity", "Done")
-        await asyncio.sleep(polling_interval)
+        await asyncio.sleep(float(polling_interval))
 
 # --- WebSocket Endpoint ---
 @app.websocket("/ws/{user_id}")
