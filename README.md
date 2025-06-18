@@ -58,21 +58,15 @@ fastapi-temporal-run --host 127.0.0.1 --port 8080 --reload
 Connect to the WebSocket endpoint at `/ws/{user_id}` where `user_id` is a unique identifier for your client.
 
 Example client connection:
-```javascript
-const ws = new WebSocket(`ws://localhost:8000/ws/${userId}`);
-
-ws.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-    console.log(`Status: ${data.status}, Message: ${data.message}`);
-};
-
-// Send a message to start a workflow
-ws.send(JSON.stringify({
-    origin: "client",
-    args: {
-        // Your workflow arguments here
-    }
-}));
+```python
+ws_url = f"ws://localhost:8000/ws/{user_id}"
+async with websockets.connect(ws_url) as ws:
+    data={"args": {"prompt": prompt, "user_id": user_id}, "origin": "streamlit_ui"}
+    await ws.send(json.dumps(data))
+    
+    while True:
+        response = await ws.recv()
+        data = json.loads(response)
 ```
 
 ### Workflow Updates
@@ -85,6 +79,22 @@ The server will send real-time updates about workflow activities in the followin
     "status": "Running|Completed|Failed|Done"
 }
 ```
+
+### Final Response
+
+The final response will be sent when the status becomes `Done`. `Done` indicates that the workflow is complete and will be set when the workflow result is set.
+
+Therefore, the **workflow result** must be set using the `set_workflow_result` method, ideally in your CALLBACK functions of your final activity. This action sets the workflow result, marks the current status as `Done`, and completes the workflow.
+
+The result of the final activity that was run will be sent through the websocket in the following JSON format:
+
+```json
+{
+    "origin": "temporal",
+    "message": final_activity_result,
+    "status": "Running|Completed|Failed|Done"
+}
+
 
 ## Package Structure
 
