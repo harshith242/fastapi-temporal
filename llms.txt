@@ -1,0 +1,26 @@
+# Fast Temporal
+
+> Fast Temporal is a Python package that provides a FastAPI application with WebSocket support for real-time communication with Temporal workflows. It enables streaming updates from Temporal workflows to clients through WebSocket connections, making it ideal for building real-time, long-running process applications.
+
+Important notes:
+
+- The package provides a generic workflow base class (`GenericTemporalWorkflow`) that handles activity scheduling, state management, and real-time status updates
+- It is designed to work with Temporal's workflow engine and FastAPI's WebSocket support
+- The package includes built-in query handlers for real-time status tracking and result retrieval
+- It supports custom activity callbacks for result processing and workflow completion
+- The package is compatible with any client that can connect to WebSocket endpoints
+
+## Docs
+
+- [Fast Temporal Documentation](https://github.com/harshith242/fast_temporal): Complete documentation of the package
+- [Temporal Python SDK Reference](https://python.temporal.io/): Reference for the underlying Temporal Python SDK
+- [FastAPI WebSocket Guide](https://fastapi.tiangolo.com/advanced/websockets/): Guide for FastAPI WebSocket implementation
+
+## Examples
+
+- [Text Processing Example](https://github.com/harshith242/fast_temporal/tree/main/examples/example_app): A complete example showing how to:
+  - Create a Temporal workflow with multiple activities
+  - Set up a FastAPI server with WebSocket support
+  - Build a Streamlit UI for real-time interaction
+  - Handle activity scheduling and result processing
+  - Manage workflow state and completion 

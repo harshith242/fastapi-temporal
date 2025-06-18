@@ -2,6 +2,7 @@ import asyncio
 import sys
 from temporalio.client import Client
 from temporalio.worker import Worker
+from fast_temporal.config.config import TEMPORAL_CLIENT, TEMPORAL_TASK_QUEUE
 from temporal_workflow import TestWorkflow
 from concurrent.futures import ThreadPoolExecutor
 from activities.write_txt_file import write_txt_file

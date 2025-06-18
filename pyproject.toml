@@ -3,11 +3,11 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "fastapi-temporal"
+name = "fast_temporal"
 version = "0.1.0"
-description = "A FastAPI-Temporal package that communicates using Temporal Queries and streams updates via websocket."
+description = "A FastAPI app that communicates with a generic Temporal and streams updates via websocket."
 authors = [
-    { name = "Vinnakota Harshith", email = "v.harshith2000@gmail.com" }
+    { name = "Your Name", email = "your.email@example.com" }
 ]
 readme = "README.md"
 requires-python = ">=3.8"
@@ -20,7 +20,7 @@ dependencies = [
 ]
 
 [project.scripts]
-fastapi-temporal-run = "fastapi_temporal.api.fastapi_comm:run"
+fast-temporal-run = "fast_temporal.api.fastapi_comm:run"
 
 [project.urls]
-"Homepage" = "https://github.com/harshith242/fastapi-temporal" 
+"Homepage" = "https://github.com/harshith242/fast_temporal" 

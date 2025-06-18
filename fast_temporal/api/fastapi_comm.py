@@ -8,7 +8,7 @@ import websockets
 import json
 import argparse
 import uvicorn
-from fastapi_temporal.config.config import TEMPORAL_CLIENT, TEMPORAL_WORKFLOW, TEMPORAL_TASK_QUEUE, START_SIGNAL_FUNCTION, get_logger,POLLING_INTERVAL,ALLOWED_ORIGINS, FASTAPI_HOST, FASTAPI_PORT, FASTAPI_RELOAD
+from fast_temporal.config.config import TEMPORAL_CLIENT, TEMPORAL_WORKFLOW, TEMPORAL_TASK_QUEUE, START_SIGNAL_FUNCTION, get_logger,POLLING_INTERVAL,ALLOWED_ORIGINS, FASTAPI_HOST, FASTAPI_PORT, FASTAPI_RELOAD
 app = FastAPI()
 logger = get_logger(__name__)
 connected_websockets = set()
@@ -185,7 +185,7 @@ def run():
     args = parser.parse_args()
 
     uvicorn.run(
-        "fastapi_temporal.api.fastapi_comm:app",
+        "fast_temporal.api.fastapi_comm:app",
         host=args.host,
         port=args.port,
         reload=args.reload

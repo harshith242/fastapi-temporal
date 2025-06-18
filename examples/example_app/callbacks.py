@@ -76,10 +76,10 @@ async def callback_llm_response(workflow, result: Any) -> Dict[str, Any]:
                 if "filename" in tool_data and "content" in tool_data:
                     # Ensure the file path is in the txtfiles directory
                     filename = tool_data["filename"]+"_"+user_id
+                    
                 if not filename.startswith("txtfiles/"):
                     filename = os.path.join("txtfiles", filename)
                 
-               
                 response_text = response_text + "\n "+tool_data["content"]
                 # Schedule file writing activity - don't set workflow result yet
                 await workflow.schedule_activity(
@@ -88,7 +88,7 @@ async def callback_llm_response(workflow, result: Any) -> Dict[str, Any]:
                     callback=callback_write_txt_file
                 )
             return result  # Return full result for state tracking
-        except json.JSONDecodeError:
+        except json.JSONDecodeError as e:
             # Setting the workflow to Failed as the tool call parsing failed.
             workflow.set_workflow_result(response_text, status="Failed")  # Set result if tool call parsing fails
             # This will still complete the workflow, but the final status will be Failed.

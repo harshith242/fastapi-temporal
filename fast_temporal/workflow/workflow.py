@@ -3,7 +3,7 @@ from datetime import timedelta
 from typing import Dict, Any, List, Optional, Callable, Union
 from temporalio import workflow
 from temporalio.common import RetryPolicy
-from fastapi_temporal.config.config import get_logger
+from fast_temporal.config.config import get_logger
 
 logger = get_logger(__name__)
 

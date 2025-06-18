@@ -1,3 +1,18 @@
+Metadata-Version: 2.4
+Name: fast_temporal
+Version: 0.1.0
+Summary: A FastAPI app that communicates with Temporal and streams updates via websocket.
+Author-email: Your Name <your.email@example.com>
+Project-URL: Homepage, https://github.com/harshith242/fast_temporal
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: fastapi
+Requires-Dist: uvicorn[standard]
+Requires-Dist: python-dotenv
+Requires-Dist: temporalio
+Requires-Dist: websockets
+Requires-Dist: loguru
+
 # Fast Temporal
 
 A Python package that provides a FastAPI application with WebSocket support for real-time communication with Temporal workflows. This package enables streaming updates from Temporal workflows to clients through WebSocket connections.

@@ -21,7 +21,6 @@ async def llm_call(prompt: str, history: list = None, user_id: str = None) -> Di
         GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
         genai.configure(api_key=GEMINI_API_KEY)
         model = genai.GenerativeModel('gemini-2.0-flash')
-        
         # Format the system prompt with history
         system_prompt = """You are an AI agent with access to a file writing tool. You can write content to text files when appropriate.
 When a user asks you to write content to a file, you should:
@@ -51,7 +50,6 @@ Make sure to use the tool call format exactly as specified. NO EXTRA CHARACTERS 
         
         # Get response from the model
         response = model.generate_content(full_prompt)
-        print("LLM response: " + response.text+ "\n\n\n\n")
         # Process the response to extract any tool calls
         response_text = response.text
         tool_call = None
