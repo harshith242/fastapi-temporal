@@ -6,7 +6,7 @@ A Python package that provides a FastAPI application with WebSocket support for 
 
 - FastAPI server with WebSocket support
 - Real-time workflow status updates
-- Generic Temporal workflow base class
+- Generic Temporal workflow base class with activity scheduling functions and query handler.
 - Environment-based configuration
 - CORS support
 - Structured logging
@@ -34,6 +34,87 @@ FASTAPI_RELOAD=true
 ```
 
 ## Usage
+
+### GenericTemporalWorkflow Class
+
+The `GenericTemporalWorkflow` class provides a robust foundation for building Temporal workflows with built-in activity scheduling, state management, and real-time status updates.
+
+#### Key Functions
+
+1. **Activity Scheduling**
+   ```python
+   async def schedule_activity(
+       self,
+       activity_name: str,
+       callback: Optional[Callable] = None,
+       args: List[Any] = None,
+       kwargs: Dict[str, Any] = None,
+       timeout: int = 60,
+       retry_policy: Optional[RetryPolicy] = None
+   ) -> Any
+   ```
+   - Schedules and executes a Temporal activity
+   - Supports optional callback for result processing
+   - Configurable timeout and retry policy
+   - Returns activity result or None if failed
+
+2. **Workflow Result Management**
+   ```python
+   def set_workflow_result(self, result: Any, status: str = "Done") -> None
+   ```
+   - Sets the final workflow result
+   - Updates workflow status (default: "Done")
+   - Triggers workflow completion
+   - Sends final result through WebSocket
+
+3. **Query Handlers**
+   ```python
+   @workflow.query
+   async def get_current_activity(self) -> Dict[str, str]
+   ```
+   - Returns current activity name, status, and ID
+   - Used for real-time status tracking
+   - Format: `{"current_activity": name, "status": status, "activity_id": id}`
+
+   ```python
+   @workflow.query
+   async def get_activity_result(self, activity_id: str) -> Any
+   ```
+   - Retrieves result of a completed activity
+   - Used for accessing activity outputs
+   - Returns None if activity not found
+
+4. **State Management**
+   ```python
+   def set_state(self, key: str, value: Any) -> None
+   def get_state(self, key: str, default: Any = None) -> Any
+   ```
+   - Stores and retrieves workflow state
+   - Useful for sharing data between activities
+   - Supports custom key-value pairs
+
+#### Usage Example
+
+```python
+@workflow.defn
+class MyWorkflow(GenericTemporalWorkflow):
+    @workflow.run
+    async def run(self, input_data: Dict[str, Any]):
+        # Schedule an activity with callback
+        result = await self.schedule_activity(
+            "process_data",
+            args=[input_data],
+            callback=self.handle_result
+        )
+        return result
+
+    async def handle_result(self, result):
+        # Process activity result
+        processed = do_something(result)
+        # Set workflow result
+        self.set_workflow_result(processed)
+        return processed
+```
 
 ### Starting the Server
 
