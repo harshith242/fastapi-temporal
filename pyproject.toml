@@ -18,9 +18,19 @@ dependencies = [
     "temporalio",
     "websockets"
 ]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Framework :: FastAPI",
+    "Topic :: Software Development :: Libraries",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent"
+]
 
 [project.scripts]
 fast-temporal-run = "fast_temporal.api.fastapi_comm:run"
+
+
+
 
 [project.urls]
 "Homepage" = "https://github.com/harshith242/fast_temporal" 
