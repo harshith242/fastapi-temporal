@@ -19,5 +19,8 @@ dependencies = [
     "websockets"
 ]
 
+[project.scripts]
+fastapi-temporal-run = "fastapi_temporal.api.fastapi_comm:run"
+
 [project.urls]
-"Homepage" = "https://github.com/yourusername/fastapi-temporal" 
+"Homepage" = "https://github.com/harshith242/fastapi-temporal" 
