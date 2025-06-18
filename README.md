@@ -37,7 +37,7 @@ FASTAPI_RELOAD=true
 
 ### GenericTemporalWorkflow Class
 
-The `GenericTemporalWorkflow` class provides a robust foundation for building Temporal workflows with built-in activity scheduling, state management, and real-time status updates.
+The `GenericTemporalWorkflow` class provides a robust foundation for building Temporal workflows with built-in activity scheduling, state management, and real-time status updates. The current version only supports one workflow and task queue.
 
 #### Key Functions
 
