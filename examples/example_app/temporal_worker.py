@@ -10,9 +10,16 @@ from activities.llm_call import llm_call
 # Worker setup and registration
 async def run_worker():
     # Initialize client
+    """
+    Creates and runs a Temporal worker that:
+    1. Connects to the Temporal server
+    2. Registers the example workflow
+    3. Registers the workflow's activities
+    4. Starts processing workflow and activity tasks
+    """
     client = await Client.connect("localhost:7233")
     
-    # Initialize and register workflow_worker
+    # Create a worker:
     worker = Worker(
         client,
         task_queue="test-task-queue",
@@ -28,7 +35,6 @@ async def run_worker():
     print("Worker started. Press Ctrl+C to exit.")
     # Start worker
     await worker.run()
-
 
 if __name__ == "__main__":
     print("Running in worker mode...")

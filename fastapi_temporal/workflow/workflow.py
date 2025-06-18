@@ -3,6 +3,9 @@ from datetime import timedelta
 from typing import Dict, Any, List, Optional, Callable, Union
 from temporalio import workflow
 from temporalio.common import RetryPolicy
+from fastapi_temporal.config.config import get_logger
+
+logger = get_logger(__name__)
 
 class GenericTemporalWorkflow:
     """
@@ -117,6 +120,7 @@ class GenericTemporalWorkflow:
             Any: The result of the activity, possibly processed by the callback, or None if the activity failed.
         """
         activity_id = f"{activity_name}_{workflow.info().workflow_id}_{len(self._activity_queue)}"
+        logger.info(f"Scheduling activity: {activity_id}")
         if activity_id not in self._active_activities and activity_id not in self._completed_activities:
             self._active_activities[activity_id] = activity_name
             # Start the activity immediately
@@ -149,24 +153,24 @@ class GenericTemporalWorkflow:
                     self.set_workflow_result(result)
                 return result
             except Exception as e:
-                print(f"Activity error for {activity_id}: {str(e)}")
+                logger.error(f"Activity error for {activity_id}: {str(e)}")
                 await self._handle_activity_error(e, activity_id)
                 self._current_activity_status = "Failed"
                 return None
         else:
-            print(f"Activity {activity_id} already completed or active")
+            logger.info(f"Activity {activity_id} already completed or active")
 
-    def set_workflow_result(self, result: Any) -> None:
+    def set_workflow_result(self, result: Any, status: str = "Done") -> None:
         """
         Set the final result of the workflow and mark it as done.
 
         Args:
             result (Any): The result to store as the workflow's output.
+            status (str, optional): The status to mark the workflow as. Defaults to "Done".
         """
         self._current_activity_status = "Done"
         self._workflow_result = result
-        #print("Set WORKFLOW result: " + str(result) + " for activity: " + self._current_activity_id + " with status: " + self._current_activity_status)
-
+        
     async def _handle_activity_error(self, error: Exception, activity_id: str) -> None:
         """
         Handle errors that occur during activity execution.
@@ -219,6 +223,6 @@ class GenericTemporalWorkflow:
         """
         while True:
             await workflow.wait_condition(lambda: bool(self._workflow_result) and workflow.all_handlers_finished())
-            #print("Workflow result: " + str(self._workflow_result))
+            logger.info("Workflow result: " + str(self._workflow_result))
             if self._workflow_result is not None:
                 return self._workflow_result 

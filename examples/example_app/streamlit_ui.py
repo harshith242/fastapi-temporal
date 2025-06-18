@@ -1,3 +1,9 @@
+# This Streamlit UI demonstrates how to:
+# 1. Connect to the FastAPI WebSocket endpoint
+# 2. Send workflow requests
+# 3. Receive real-time updates about workflow progress
+# 4. Display the results to the user
+
 import streamlit as st
 import uuid
 import os
@@ -43,12 +49,18 @@ if prompt := st.chat_input("Enter your message..."):
             # Each open session has a unique user ID. The user ID is used to identify the user in the temporal workflow.
             ws_url = f"ws://localhost:8000/ws/{user_id}"
             async with websockets.connect(ws_url) as ws:
-                data={"args": {"prompt": prompt, "user_id": user_id}, "origin": "streamlit_ui"}
+                # Send the workflow request
+                data = {
+                    "args": {"prompt": prompt, "user_id": user_id},
+                    "origin": "streamlit_ui"
+                }
                 await ws.send(json.dumps(data))
                 
+                # Receive and process updates
                 while True:
                     response = await ws.recv()
                     data = json.loads(response)
+                    # If the status is not Done, we are streaming the response
                     if data["status"] !="Done":
                         st.session_state.messages.append({"role": "assistant", "content": data["message"],"completed": False})
                         response_placeholder = st.empty()
@@ -60,6 +72,7 @@ if prompt := st.chat_input("Enter your message..."):
                                 await asyncio.sleep(0.025)
                             await asyncio.sleep(0.5)
                     else:
+                        # If the status is Done, we are displaying the final response from the final activity.
                         response=data.get("message").get("response")
                         st.session_state.messages.append({"role": "assistant", "content": response,"completed": True})
                         st.session_state.messages  = [entry for entry in st.session_state.messages if entry.get("role") == "user" or (entry.get("role") == "assistant" and entry.get("completed") is not False)]

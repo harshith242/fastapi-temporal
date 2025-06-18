@@ -1,7 +1,8 @@
 from temporalio import activity
 import google.generativeai as genai
 from typing import Dict, Any
-
+import os
+from dotenv import load_dotenv
 
 @activity.defn
 async def llm_call(prompt: str, history: list = None, user_id: str = None) -> Dict[str, Any]:
@@ -16,7 +17,8 @@ async def llm_call(prompt: str, history: list = None, user_id: str = None) -> Di
     """
     try:
         # Initialize the model
-        #GEMINI_API_KEY = ADD YOUR GEMINI API KEY HERE
+        load_dotenv() 
+        GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
         genai.configure(api_key=GEMINI_API_KEY)
         model = genai.GenerativeModel('gemini-2.0-flash')
         

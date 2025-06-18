@@ -19,16 +19,12 @@ async def callback_text_to_speech(workflow, result: Any) -> None:
     response_text = result["response"]
     user_id = result["user_id"]
     response_text = response_text + "\n\n\nAudio file saved to " + audio_path
+    # Here we are setting the workflow result. This will mark the current status as Done and complete the workflow.
+    # The result here is the audio file path.
     workflow.set_workflow_result(audio_path)
     
-    ''' Posting the current state of the workflow to the UI '''
-    '''
-    await workflow.schedule_activity(
-        activity_name="process_and_respond_multiple_users",
-        args=[{"message": response_text, "activity_name": "text_to_speech", "user_id": user_id, "completed": True}]
-    )
-    '''
     result["response"] = response_text
+    # Here we are returning the result to the workflow. FastAPI will use this result as this is the final callback and send it to the client.
     return result
 
 async def callback_write_txt_file(workflow, result: Any) -> None:
@@ -42,13 +38,6 @@ async def callback_write_txt_file(workflow, result: Any) -> None:
     response_text = result["response"]
     user_id = result["user_id"]
     
-    ''' Posting the current state of the workflow to the UI '''
-    '''
-    await workflow.schedule_activity(
-        activity_name="process_and_respond_multiple_users",
-        args=[{"message": "Sending text for audio", "activity_name": "txt_to_audio", "user_id": user_id, "completed": False}]
-    )
-    '''
     await asyncio.sleep(3)
     # Schedule text-to-speech conversion
     audio_result = await workflow.schedule_activity(
@@ -56,9 +45,7 @@ async def callback_write_txt_file(workflow, result: Any) -> None:
         args=[text,response_text, user_id],
         callback=callback_text_to_speech
     )
-    # Set the workflow result after text-to-speech is complete
-    #workflow.set_workflow_result(result["text"])
-
+    
 async def callback_llm_response(workflow, result: Any) -> Dict[str, Any]:
     """Handle the result of an LLM call.
     
@@ -92,13 +79,7 @@ async def callback_llm_response(workflow, result: Any) -> Dict[str, Any]:
                 if not filename.startswith("txtfiles/"):
                     filename = os.path.join("txtfiles", filename)
                 
-                ''' Posting the current state of the workflow to the UI '''
-                '''
-                await workflow.schedule_activity(
-                    activity_name="process_and_respond_multiple_users",
-                    args=[{"message": "Sending text to file", "activity_name": "write_txt_file", "user_id": user_id, "completed": False}]
-                )
-                '''
+               
                 response_text = response_text + "\n "+tool_data["content"]
                 # Schedule file writing activity - don't set workflow result yet
                 await workflow.schedule_activity(
@@ -108,17 +89,12 @@ async def callback_llm_response(workflow, result: Any) -> Dict[str, Any]:
                 )
             return result  # Return full result for state tracking
         except json.JSONDecodeError:
-            workflow.set_workflow_result(response_text)  # Set result if tool call parsing fails
+            # Setting the workflow to Failed as the tool call parsing failed.
+            workflow.set_workflow_result(response_text, status="Failed")  # Set result if tool call parsing fails
+            # This will still complete the workflow, but the final status will be Failed.
             return result
     else:
         # No tool call, set the workflow result immediately
-        ''' Posting the current state of the workflow to the UI '''
-        '''
-        await workflow.schedule_activity(
-            activity_name="process_and_respond_multiple_users",
-            args=[{"message": response_text, "activity_name": "llm_call", "user_id": user_id, "completed": True}]
-        )
-        '''
         workflow.set_workflow_result(response_text)
         return result
 

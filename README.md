@@ -86,24 +86,69 @@ The final response will be sent when the status becomes `Done`. `Done` indicates
 
 Therefore, the **workflow result** must be set using the `set_workflow_result` method, ideally in your CALLBACK functions of your final activity. This action sets the workflow result, marks the current status as `Done`, and completes the workflow.
 
-The result of the final activity that was run will be sent through the websocket in the following JSON format:
+Optionally, you can set the status as any other status using the `set_workflow_result(result,"Failed")`. 
+
+The workflow will still be **completed** if you dont want retries. The example contains both the scenarios - Activity task failures that will fail the workflow and Activity task failure that are handled and won't fail the workflow.
+
+The result of the final activity/callback (if a callback was defined), that was run will be sent through the websocket in the following JSON format:
 
 ```json
 {
     "origin": "temporal",
-    "message": final_activity_result,
+    "message": final_activity_result/final_callback_result,
     "status": "Done"
 }
 ```
+
+## Example Application
+
+The package includes an example application in the `examples/example_app` directory that demonstrates the integration of FastAPI, Temporal, and Streamlit. The example shows how to:
+
+1. Define Temporal activities and workflows
+2. Set up a Temporal worker
+3. Create a FastAPI server with WebSocket support
+4. Build a Streamlit UI that communicates with the workflow
+
+In this example, we are taking in input from the user, where he uploads a txt file. Then according to user instructions, we generate the content by calling an LLM(Activity 1), write it into the text file (Activity 2), and create an audio file(Activity 3).
+
+### Running the Example
+
+1. Start the Temporal worker:
+```bash
+python examples/example_app/temporal_worker.py
+```
+
+2. Start the FastAPI server:
+```bash
+fastapi-temporal-run
+```
+
+3. Launch the Streamlit UI:
+```bash
+streamlit run examples/example_app/streamlit_ui.py
+```
+
+The example demonstrates:
+- Real-time workflow status updates
+- Activity scheduling and management
+- WebSocket communication
+- Streamlit UI integration
 
 ## Package Structure
 
 ```
 fastapi-temporal/
 ├── fastapi_temporal/
-│   ├── config/           # Configuration and logging
-│   ├── workflow/         # Temporal workflow base class
-│   └── api/             # FastAPI application and WebSocket handling
+│   ├── config/
+│   ├── workflow/
+│   └── api/
+│
+├── examples/
+│   └── example_app/
+│       └── activities/
+│
+├── pyproject.toml
+└── README.md
 ```
 
 ### Key Components
