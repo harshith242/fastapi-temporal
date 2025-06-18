@@ -7,7 +7,7 @@ name = "fast_temporal"
 version = "0.1.0"
 description = "A FastAPI app that communicates with a generic Temporal and streams updates via websocket."
 authors = [
-    { name = "Your Name", email = "your.email@example.com" }
+    { name = "Vinnakota Harshith", email = "v.harshith2000@gmail.com" }
 ]
 readme = "README.md"
 requires-python = ">=3.8"
@@ -28,9 +28,6 @@ classifiers = [
 
 [project.scripts]
 fast-temporal-run = "fast_temporal.api.fastapi_comm:run"
-
-
-
 
 [project.urls]
 "Homepage" = "https://github.com/harshith242/fast_temporal" 

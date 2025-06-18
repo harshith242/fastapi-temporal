@@ -1,9 +1,14 @@
 Metadata-Version: 2.4
 Name: fast_temporal
 Version: 0.1.0
-Summary: A FastAPI app that communicates with Temporal and streams updates via websocket.
-Author-email: Your Name <your.email@example.com>
+Summary: A FastAPI app that communicates with a generic Temporal and streams updates via websocket.
+Author-email: Vinnakota Harshith <v.harshith2000@gmail.com>
 Project-URL: Homepage, https://github.com/harshith242/fast_temporal
+Classifier: Programming Language :: Python :: 3
+Classifier: Framework :: FastAPI
+Classifier: Topic :: Software Development :: Libraries
+Classifier: Intended Audience :: Developers
+Classifier: Operating System :: OS Independent
 Requires-Python: >=3.8
 Description-Content-Type: text/markdown
 Requires-Dist: fastapi
@@ -11,7 +16,6 @@ Requires-Dist: uvicorn[standard]
 Requires-Dist: python-dotenv
 Requires-Dist: temporalio
 Requires-Dist: websockets
-Requires-Dist: loguru
 
 # Fast Temporal
 
@@ -29,7 +33,7 @@ A Python package that provides a FastAPI application with WebSocket support for 
 ## Installation
 
 ```bash
-pip install .
+pip install fast-temporal
 ```
 
 ## Configuration
@@ -52,7 +56,7 @@ FASTAPI_RELOAD=true
 
 ### GenericTemporalWorkflow Class
 
-The `GenericTemporalWorkflow` class provides a robust foundation for building Temporal workflows with built-in activity scheduling, state management, and real-time status updates.
+The `GenericTemporalWorkflow` class provides a robust foundation for building Temporal workflows with built-in activity scheduling, state management, and real-time status updates. The current version only supports one workflow and task queue.
 
 #### Key Functions
 

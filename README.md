@@ -14,7 +14,7 @@ A Python package that provides a FastAPI application with WebSocket support for 
 ## Installation
 
 ```bash
-pip install .
+pip install fast-temporal
 ```
 
 ## Configuration
