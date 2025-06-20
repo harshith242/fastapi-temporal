@@ -12,7 +12,8 @@ Important notes:
 
 ## Docs
 
-- [Fast Temporal Documentation](https://github.com/harshith242/fast_temporal): Complete documentation of the package
+- [Fast Temporal Documentation](https://github.com/harshith242/fast_temporal): Complete documentation of the package.
+- [Fast Temporal PyPI] (https://pypi.org/project/fast-temporal/): Reference to the python package on PyPI.
 - [Temporal Python SDK Reference](https://python.temporal.io/): Reference for the underlying Temporal Python SDK
 - [FastAPI WebSocket Guide](https://fastapi.tiangolo.com/advanced/websockets/): Guide for FastAPI WebSocket implementation
 

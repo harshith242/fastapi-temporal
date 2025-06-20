@@ -1,4 +1,4 @@
-# fastapi_comm.py
+# fastapi_multi.py
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request
 import asyncio
 from temporalio.client import Client
@@ -8,7 +8,7 @@ import websockets
 import json
 import argparse
 import uvicorn
-from fast_temporal.config.config import TEMPORAL_CLIENT, TEMPORAL_WORKFLOW, TEMPORAL_TASK_QUEUE, START_SIGNAL_FUNCTION, get_logger,POLLING_INTERVAL,ALLOWED_ORIGINS, FASTAPI_HOST, FASTAPI_PORT, FASTAPI_RELOAD
+from fast_temporal.config.config import TEMPORAL_CLIENT, get_logger,POLLING_INTERVAL,ALLOWED_ORIGINS, FASTAPI_HOST, FASTAPI_PORT, FASTAPI_RELOAD
 app = FastAPI()
 logger = get_logger(__name__)
 connected_websockets = set()
@@ -71,13 +71,17 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 
-async def get_or_create_workflow(workflow_id,args):
+async def get_or_create_workflow(workflow_id,args,workflow):
     """
     Retrieves an existing Temporal workflow by ID or creates a new one if it does not exist.
 
     Args:
         workflow_id (str): The unique identifier for the workflow.
         args (Any): Arguments to pass to the workflow SIGNAL which will trigger the workflow execution.
+        workflow (Dict) : Contains information about the workflow. The following information to be included
+            - workflow_name (str): The workflow name in Temporal
+            - workflow_task_queue (str): The task queue name for the workflow.
+            - start_signal_function (str):  The signal function which will initiate the workflow
 
     Returns:
         handle: The workflow handle if successful, otherwise None.
@@ -88,11 +92,14 @@ async def get_or_create_workflow(workflow_id,args):
     
     try:
         # Try to create a new workflow first
+        workflow_name=workflow.get("workflow_name")
+        workflow_task_queue=workflow.get("workflow_task_queue")
+        start_signal_function=workflow.get("start_signal_function")
         handle = await client.start_workflow(
-            TEMPORAL_WORKFLOW,
+            workflow_name,
             id=workflow_id,
-            task_queue=TEMPORAL_TASK_QUEUE,
-            start_signal=START_SIGNAL_FUNCTION,
+            task_queue=workflow_task_queue,
+            start_signal=start_signal_function,
             start_signal_args=[args]
         )
         return handle
@@ -170,7 +177,8 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
                 logger.info("Sending signal to Temporal")
                 workflow_id = str(uuid.uuid4())
                 args=data.get("args")
-                workflow_handle = await get_or_create_workflow(workflow_id,args)
+                workflow=data.get("workflow")
+                workflow_handle = await get_or_create_workflow(workflow_id,args,workflow)
                 asyncio.create_task(poll_temporal(workflow_handle, user_id, POLLING_INTERVAL))
                 
     except WebSocketDisconnect:
@@ -185,7 +193,7 @@ def run():
     args = parser.parse_args()
 
     uvicorn.run(
-        "fast_temporal.api.fastapi_comm:app",
+        "fast_temporal.api.fastapi:app",
         host=args.host,
         port=args.port,
         reload=args.reload

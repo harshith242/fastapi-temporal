@@ -7,6 +7,7 @@ A Python package that provides a FastAPI application with WebSocket support for 
 - FastAPI server with WebSocket support
 - Real-time workflow status updates
 - Generic Temporal workflow base class with activity scheduling functions and query handler.
+- Support for multiple workflows.
 - Environment-based configuration
 - CORS support
 - Structured logging
@@ -23,9 +24,6 @@ Create a `.env` file in your project root with the following variables:
 
 ```env
 TEMPORAL_CLIENT=localhost:7233
-TEMPORAL_WORKFLOW=your_workflow_name
-TEMPORAL_TASK_QUEUE=your_task_queue
-START_SIGNAL_FUNCTION=your_signal_function
 POLLING_INTERVAL=0.5
 ALLOWED_ORIGINS=*
 FASTAPI_HOST=0.0.0.0
@@ -37,7 +35,7 @@ FASTAPI_RELOAD=true
 
 ### GenericTemporalWorkflow Class
 
-The `GenericTemporalWorkflow` class provides a robust foundation for building Temporal workflows with built-in activity scheduling, state management, and real-time status updates. The current version only supports one workflow and task queue.
+The `GenericTemporalWorkflow` class provides a robust foundation for building Temporal workflows with built-in activity scheduling, state management, and real-time status updates. This can be extended by every workflow involved in the implementation.
 
 #### Key Functions
 
@@ -65,7 +63,6 @@ The `GenericTemporalWorkflow` class provides a robust foundation for building Te
    - Sets the final workflow result
    - Updates workflow status (default: "Done")
    - Triggers workflow completion
-   - Sends final result through WebSocket
 
 3. **Query Handlers**
    ```python
@@ -150,6 +147,41 @@ async with websockets.connect(ws_url) as ws:
         data = json.loads(response)
 ```
 
+### WebSocket Communication
+
+Connect to the WebSocket endpoint at `/ws/{user_id}` where `user_id` is a unique identifier for your client.
+
+#### Sending Data to Start a Workflow
+
+To start a workflow, you must send a JSON message over the WebSocket with a specific structure. The backend expects a dictionary containing `args`, `origin`, and `workflow` keys.
+
+It is crucial that the keys in the dictionary are named exactly as shown below, as the backend uses these specific keys to process the request.
+
+```json
+{
+    "args": {
+        "prompt": "your prompt here",
+        "user_id": "unique_user_id"
+    },
+    "origin": "streamlit_ui",
+    "workflow": {
+        "workflow_name": "TestWorkflow",
+        "workflow_task_queue": "test-task-queue",
+        "start_signal_function": "handle_llm_request"
+    }
+}
+```
+
+**Key-Value Explanations:**
+
+*   **`args`** (`dict`): A dictionary containing the arguments to be passed to your workflow's start signal function. The structure of this dictionary is dependent on your specific workflow's requirements.
+*   **`origin`** (`str`): A string that identifies the client application sending the request (e.g., `"streamlit_ui"`). This helps in logging and routing. For messages received from temporal, this value will be given out as `"temporal"`
+*   **`workflow`** (`dict`): A dictionary that provides the necessary metadata to identify and start the correct Temporal workflow.
+    *   **`workflow_name`** (`str`): The name of the workflow class that you want to execute. This must match a workflow registered with your Temporal worker.
+    *   **`workflow_task_queue`** (`str`): The task queue that the workflow will be scheduled on. Ensure your Temporal worker is listening to this queue.
+    *   **`start_signal_function`** (`str`): The name of the signal method within your workflow that will be triggered to start the execution. The `args` dictionary will be passed as an argument to this method.
+
+
 ### Workflow Updates
 
 The server will send real-time updates about workflow activities in the following format:
@@ -169,17 +201,21 @@ Therefore, the **workflow result** must be set using the `set_workflow_result` m
 
 Optionally, you can set the status as any other status using the `set_workflow_result(result,"Failed")`. 
 
-The workflow will still be **completed** if you dont want retries. The example contains both the scenarios - Activity task failures that will fail the workflow and Activity task failure that are handled and won't fail the workflow.
+The workflow will still be **completed** if you dont want retries. The example contains both the scenarios - Activity task failures that will show up in the Temporal workflow UI and Activity task failure that are handled and won't show up in the UI.
 
-The result of the final activity/callback (if a callback was defined), that was run will be sent through the websocket in the following JSON format:
+The result of the final activity, that was run will be sent through the websocket in the following JSON format:
 
 ```json
 {
     "origin": "temporal",
-    "message": final_activity_result/final_callback_result,
+    "message": final_activity_result
     "status": "Done"
 }
 ```
+
+**NOTE:**
+
+All the activity results, if needed, can be retrieved using the `get_activity_result`. To fetch the result of callback, please use the `get_callback_result` function, the argument supplied should be the activity ID for which the callback result is needed.
 
 ## Example Application
 
@@ -198,7 +234,6 @@ In this example, we are taking in input from the user, where he uploads a txt fi
 ```bash
 python examples/example_app/temporal_worker.py
 ```
-
 2. Start the FastAPI server:
 ```bash
 fast-temporal-run
@@ -266,3 +301,5 @@ fast_temporal/
 3. Commit your changes
 4. Push to the branch
 5. Create a new Pull Request
+
+

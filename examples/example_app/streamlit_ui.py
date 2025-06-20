@@ -52,7 +52,8 @@ if prompt := st.chat_input("Enter your message..."):
                 # Send the workflow request
                 data = {
                     "args": {"prompt": prompt, "user_id": user_id},
-                    "origin": "streamlit_ui"
+                    "origin": "streamlit_ui",
+                    "workflow":{"workflow_name":"TestWorkflow", "workflow_task_queue":"test-task-queue","start_signal_function":"handle_llm_request"}
                 }
                 await ws.send(json.dumps(data))
                 

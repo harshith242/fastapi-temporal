@@ -144,11 +144,12 @@ class GenericTemporalWorkflow:
                 
                 if callback:
                     # Process result through callback
-                    result = await callback(self, result)
-                self._state[activity_id] = result
+                    result_callback = await callback(self, result)
+                self._state[activity_id + str("_callback")] = result_callback
                 # Store result in state
                 #if not self._active_activities:
                 #    self.set_workflow_result(result)
+                print(self._state)
                 if self._complete_workflow:
                     self.set_workflow_result(result)
                 return result
@@ -205,6 +206,20 @@ class GenericTemporalWorkflow:
             Any: The result of the activity, or None if not found.
         """
         return self._state.get(activity_id, None)
+    
+    @workflow.query
+    async def get_callback_result(self, activity_id: str) -> Any:
+        """
+        Query handler: Retrieve the result of a completed callback by its activity ID.
+
+        Args:
+            activity_id (str): The unique identifier of the activity.
+
+        Returns:
+            Any: The result of the callback, or None if not found.
+        """
+        callback_id=activity_id + str("_callback")
+        return self._state.get(callback_id, None)
 
     @workflow.run
     async def run(self, *args, **kwargs) -> Any:

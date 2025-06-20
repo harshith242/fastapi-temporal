@@ -6,9 +6,6 @@ import logging
 load_dotenv()  # Loads from .env into environment
 
 TEMPORAL_CLIENT = os.getenv("TEMPORAL_CLIENT")
-TEMPORAL_WORKFLOW = os.getenv("TEMPORAL_WORKFLOW")
-TEMPORAL_TASK_QUEUE = os.getenv("TEMPORAL_TASK_QUEUE")
-START_SIGNAL_FUNCTION = os.getenv("START_SIGNAL_FUNCTION")
 POLLING_INTERVAL = os.getenv("POLLING_INTERVAL")
 ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS")
 FASTAPI_HOST = os.getenv("FASTAPI_HOST")
@@ -20,12 +17,6 @@ if POLLING_INTERVAL is None:
 
 if TEMPORAL_CLIENT is None:
     raise ValueError("TEMPORAL_CLIENT is not set")
-if TEMPORAL_WORKFLOW is None:
-    raise ValueError("TEMPORAL_WORKFLOW is not set")
-if TEMPORAL_TASK_QUEUE is None:
-    raise ValueError("TEMPORAL_TASK_QUEUE is not set")
-if START_SIGNAL_FUNCTION is None:
-    raise ValueError("START_SIGNAL_FUNCTION is not set")
 if ALLOWED_ORIGINS is None:
     raise ValueError("ALLOWED_ORIGINS is not set")
 
