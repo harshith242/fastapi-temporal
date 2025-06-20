@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fast_temporal"
-version = "0.2.1"
+version = "0.3"
 description = "A FastAPI app that communicates with a generic Temporal and streams updates via websocket."
 authors = [
     { name = "Vinnakota Harshith", email = "v.harshith2000@gmail.com" }

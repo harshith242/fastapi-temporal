@@ -146,10 +146,7 @@ class GenericTemporalWorkflow:
                     # Process result through callback
                     result_callback = await callback(self, result)
                 self._state[activity_id + str("_callback")] = result_callback
-                # Store result in state
-                #if not self._active_activities:
-                #    self.set_workflow_result(result)
-                print(self._state)
+                
                 if self._complete_workflow:
                     self.set_workflow_result(result)
                 return result

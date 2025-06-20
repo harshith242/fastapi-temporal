@@ -228,6 +228,10 @@ The result of the final activity, that was run will be sent through the websocke
 
 All the activity results, if needed, can be retrieved using the `get_activity_result` query handler. To fetch the result of callback, please use the `get_callback_result` query handler, the argument supplied should be the activity ID for which the callback result is needed.
 
+#### Logs
+
+All the logs are written to an app.log file with detailed information, to be helpful in debugging.
+
 ## Example Application
 
 The package includes an example application in the `examples/example_app` directory that demonstrates the integration of FastAPI, Temporal, and Streamlit. The example shows how to:
