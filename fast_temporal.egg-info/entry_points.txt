@@ -1,2 +1,0 @@
-[console_scripts]
-fast-temporal-run = fast_temporal.api.fastapi_comm:run
