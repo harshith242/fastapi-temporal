@@ -81,6 +81,17 @@ The `GenericTemporalWorkflow` class provides a robust foundation for building Te
    - Used for accessing activity outputs
    - Returns None if activity not found
 
+   ```python
+   @workflow.query
+   async def get_callback_result(self, activity_id: str) -> Any
+   ```
+   - Retrieves the result of a callback function associated with a completed activity
+   - Used for accessing the output of a callback after an activity finishes
+   - **Arguments:**
+     - `activity_id` (`str`): The unique identifier of the activity whose callback result you want to fetch
+   - **Returns:**
+     - The result of the callback, or `None` if not found
+
 4. **State Management**
    ```python
    def set_state(self, key: str, value: Any) -> None
@@ -215,7 +226,7 @@ The result of the final activity, that was run will be sent through the websocke
 
 **NOTE:**
 
-All the activity results, if needed, can be retrieved using the `get_activity_result`. To fetch the result of callback, please use the `get_callback_result` function, the argument supplied should be the activity ID for which the callback result is needed.
+All the activity results, if needed, can be retrieved using the `get_activity_result` query handler. To fetch the result of callback, please use the `get_callback_result` query handler, the argument supplied should be the activity ID for which the callback result is needed.
 
 ## Example Application
 
